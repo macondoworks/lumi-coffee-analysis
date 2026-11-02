@@ -66,15 +66,29 @@ CREATE USER 'claude_ro'@'127.0.0.1' IDENTIFIED BY 'choose-a-password';
 GRANT SELECT ON lumi_coffee.* TO 'claude_ro'@'127.0.0.1';
 ```
 
-Step 5, in the Claude panel: type `/mcp` → **Add server**, and fill it in with
-these values (the dialog's labels may read a little differently):
+Step 5, in the Claude panel: type `/mcp` → **Add server** (the **Add MCP server**
+form), and fill it in:
 
-| Field | Value |
+| Field | What to put |
 |---|---|
 | Name | `lumi` |
-| Type | stdio (a command on your computer) |
+| Transport | Local command (stdio) |
 | Command | `npx` |
-| Arguments | `-y @bytebase/dbhub --dsn "mysql://claude_ro:choose-a-password@127.0.0.1:3306/lumi_coffee"` |
+| Arguments (one per line) | four lines, no quotes — see below |
+| Environment variables | leave empty |
+| Scope | Local (only you, only this project). Never Project: that writes the password into a file in this folder |
+
+The four argument lines:
+
+```text
+-y
+@bytebase/dbhub
+--dsn
+mysql://claude_ro:choose-a-password@127.0.0.1:3306/lumi_coffee
+```
+
+Then check it: start a new conversation and type `/mcp`. `lumi` should show
+**✓ Connected**; **Failed** means a wrong password, user or address.
 
 Or, if you have the standalone Claude Code CLI installed (the VS Code extension
 alone does not put `claude` in your terminal), the same in one command — on
