@@ -1,0 +1,15 @@
+# Secrets never go in the repository
+.env
+*.env
+.mcp.json
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Python
+__pycache__/
+.venv/
+*.pyc
+
+# Editors and systems
+.DS_Store
+Thumbs.db
