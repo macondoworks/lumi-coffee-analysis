@@ -1,6 +1,6 @@
 # Lumi Coffee analysis
 
-The practice project for weeks 11 of the LumiSkills Post-Program playbook:
+The practice project for week 11 of the LumiSkills Post-Program playbook:
 an analysis of four coffee shops' sales, done with Claude Code and checked
 against numbers you already know. All the data is simulated.
 
