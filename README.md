@@ -53,16 +53,16 @@ terminal. Never paste a password into the chat or into a file in this folder.
 | # | Step | Who runs it | Done when |
 |---|---|---|---|
 | 1 | Check Node.js: `node --version`. Needs 22.5 or later; if not, install the LTS from [nodejs.org](https://nodejs.org/en/download). | Claude can | it prints v22.5 or higher |
-| 2 | Check MySQL: `mysql --version`, and that the MySQL server is running. | Claude can | it prints a version, and you can log in as admin |
-| 3 | Load the data: `mysql -u root -p < database/lumi_coffee_mysql.sql` — or, in MySQL Workbench, File → Open SQL Script → run it. | **You** (admin password) | it finishes without errors |
-| 4 | Create the read-only user, still as admin: the two lines below, with a password you choose. It is made for `127.0.0.1`, not `localhost`: the connector reaches MySQL over the network, and some installations refuse a `localhost` user that way. | **You** | no error |
+| 2 | Check MySQL is installed and its server is running. On Windows `mysql` is often not on the PATH, so `mysql --version` may fail even when MySQL works: opening MySQL Workbench and connecting as admin is enough. Do not change the PATH for this. | Claude can help | you can connect as admin |
+| 3 | Load the data. In MySQL Workbench, connected as admin: File → Open SQL Script → `database/lumi_coffee_mysql.sql` → run (lightning icon). On macOS or Linux, `mysql -u root -p < database/lumi_coffee_mysql.sql` does the same; Windows PowerShell does not accept that `<`. | **You** (admin password) | it finishes without errors |
+| 4 | Create the read-only user, still as admin: a new query tab in Workbench, the two lines below, with a password you choose — **letters and digits only**, because it goes inside an address where `@ : / # ?` break it. It is made for `127.0.0.1`, not `localhost`: the connector reaches MySQL over the network, and some installations refuse a `localhost` user that way. | **You** | no error |
 | 5 | Add the connection to Claude, as below. | **You** (it contains the password) | `lumi` appears in the `/mcp` list |
 | 6 | Check it: start a new conversation, type `/mcp`, and ask how many rows each table has. | Claude can | 4 stores, 16 products, 240 customers, 2,294 sales |
 
 Step 4 (in MySQL, as admin):
 
 ```sql
-CREATE USER 'claude_ro'@'127.0.0.1' IDENTIFIED BY 'choose-a-password';
+CREATE USER 'claude_ro'@'127.0.0.1' IDENTIFIED BY 'ChooseAPassword1';
 GRANT SELECT ON lumi_coffee.* TO 'claude_ro'@'127.0.0.1';
 ```
 
@@ -84,7 +84,7 @@ The four argument lines:
 -y
 @bytebase/dbhub
 --dsn
-mysql://claude_ro:choose-a-password@127.0.0.1:3306/lumi_coffee
+mysql://claude_ro:ChooseAPassword1@127.0.0.1:3306/lumi_coffee
 ```
 
 Then check it: start a new conversation and type `/mcp`. `lumi` should show
@@ -96,7 +96,7 @@ Windows PowerShell, on one line without the `\`:
 
 ```bash
 claude mcp add --transport stdio lumi -- npx -y @bytebase/dbhub \
-  --dsn "mysql://claude_ro:choose-a-password@127.0.0.1:3306/lumi_coffee"
+  --dsn "mysql://claude_ro:ChooseAPassword1@127.0.0.1:3306/lumi_coffee"
 ```
 
 The connection is saved in your own Claude configuration, not in this folder, so
