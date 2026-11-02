@@ -55,15 +55,15 @@ terminal. Never paste a password into the chat or into a file in this folder.
 | 1 | Check Node.js: `node --version`. Needs 22.5 or later; if not, install the LTS from [nodejs.org](https://nodejs.org/en/download). | Claude can | it prints v22.5 or higher |
 | 2 | Check MySQL: `mysql --version`, and that the MySQL server is running. | Claude can | it prints a version, and you can log in as admin |
 | 3 | Load the data: `mysql -u root -p < database/lumi_coffee_mysql.sql` — or, in MySQL Workbench, File → Open SQL Script → run it. | **You** (admin password) | it finishes without errors |
-| 4 | Create the read-only user, still as admin: the two lines below, with a password you choose. | **You** | no error |
+| 4 | Create the read-only user, still as admin: the two lines below, with a password you choose. It is made for `127.0.0.1`, not `localhost`: the connector reaches MySQL over the network, and some installations refuse a `localhost` user that way. | **You** | no error |
 | 5 | Add the connection to Claude, as below. | **You** (it contains the password) | `lumi` appears in the `/mcp` list |
 | 6 | Check it: start a new conversation, type `/mcp`, and ask how many rows each table has. | Claude can | 4 stores, 16 products, 240 customers, 2,294 sales |
 
 Step 4 (in MySQL, as admin):
 
 ```sql
-CREATE USER 'claude_ro'@'localhost' IDENTIFIED BY 'choose-a-password';
-GRANT SELECT ON lumi_coffee.* TO 'claude_ro'@'localhost';
+CREATE USER 'claude_ro'@'127.0.0.1' IDENTIFIED BY 'choose-a-password';
+GRANT SELECT ON lumi_coffee.* TO 'claude_ro'@'127.0.0.1';
 ```
 
 Step 5, in the Claude panel: type `/mcp` → **Add server**, and fill it in with
@@ -74,7 +74,7 @@ these values (the dialog's labels may read a little differently):
 | Name | `lumi` |
 | Type | stdio (a command on your computer) |
 | Command | `npx` |
-| Arguments | `-y @bytebase/dbhub --dsn "mysql://claude_ro:choose-a-password@localhost:3306/lumi_coffee"` |
+| Arguments | `-y @bytebase/dbhub --dsn "mysql://claude_ro:choose-a-password@127.0.0.1:3306/lumi_coffee"` |
 
 Or, if you have the standalone Claude Code CLI installed (the VS Code extension
 alone does not put `claude` in your terminal), the same in one command — on
@@ -82,7 +82,7 @@ Windows PowerShell, on one line without the `\`:
 
 ```bash
 claude mcp add --transport stdio lumi -- npx -y @bytebase/dbhub \
-  --dsn "mysql://claude_ro:choose-a-password@localhost:3306/lumi_coffee"
+  --dsn "mysql://claude_ro:choose-a-password@127.0.0.1:3306/lumi_coffee"
 ```
 
 The connection is saved in your own Claude configuration, not in this folder, so
