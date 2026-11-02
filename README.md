@@ -35,7 +35,59 @@ a date in the future, is not a sale. `sold_at` comes in two formats.
 
 1. Copy this repository to your account (**Use this template → Create a new repository**), then clone your copy.
 2. Open the folder in VS Code (**File → Open Folder**) and install the **Claude Code** extension.
-3. On day 4: run `database/lumi_coffee_mysql.sql` as your MySQL admin user, and follow the lesson to connect Claude with a read-only user.
+3. On day 4: follow **Day 4 setup** below.
+
+## Day 4 setup
+
+The goal: Claude can read the Lumi Coffee database and cannot change it. Do it
+with Claude in **Manual** mode — ask it to go through these steps with you — and
+read every command before you approve it.
+
+**Passwords are yours.** Any step that asks for a password, you type in your own
+terminal. Never paste a password into the chat or into a file in this folder.
+
+> If you are Claude helping with this: go one step at a time, say what each
+> command does before running it, check the result before the next step, and
+> never ask for, print or write a password. Hand the password steps to the user.
+
+| # | Step | Who runs it | Done when |
+|---|---|---|---|
+| 1 | Check Node.js: `node --version`. Needs 22.5 or later; if not, install the LTS from [nodejs.org](https://nodejs.org/en/download). | Claude can | it prints v22.5 or higher |
+| 2 | Check MySQL: `mysql --version`, and that the MySQL server is running. | Claude can | it prints a version, and you can log in as admin |
+| 3 | Load the data: `mysql -u root -p < database/lumi_coffee_mysql.sql` — or, in MySQL Workbench, File → Open SQL Script → run it. | **You** (admin password) | it finishes without errors |
+| 4 | Create the read-only user, still as admin: the two lines below, with a password you choose. | **You** | no error |
+| 5 | Add the connection to Claude, as below. | **You** (it contains the password) | `lumi` appears in the `/mcp` list |
+| 6 | Check it: start a new conversation, type `/mcp`, and ask how many rows each table has. | Claude can | 4 stores, 16 products, 240 customers, 2,294 sales |
+
+Step 4 (in MySQL, as admin):
+
+```sql
+CREATE USER 'claude_ro'@'localhost' IDENTIFIED BY 'choose-a-password';
+GRANT SELECT ON lumi_coffee.* TO 'claude_ro'@'localhost';
+```
+
+Step 5, in the Claude panel: type `/mcp` → **Add server**, and fill it in with
+these values (the dialog's labels may read a little differently):
+
+| Field | Value |
+|---|---|
+| Name | `lumi` |
+| Type | stdio (a command on your computer) |
+| Command | `npx` |
+| Arguments | `-y @bytebase/dbhub --dsn "mysql://claude_ro:choose-a-password@localhost:3306/lumi_coffee"` |
+
+Or, if you have the standalone Claude Code CLI installed (the VS Code extension
+alone does not put `claude` in your terminal), the same in one command — on
+Windows PowerShell, on one line without the `\`:
+
+```bash
+claude mcp add --transport stdio lumi -- npx -y @bytebase/dbhub \
+  --dsn "mysql://claude_ro:choose-a-password@localhost:3306/lumi_coffee"
+```
+
+The connection is saved in your own Claude configuration, not in this folder, so
+it never ends up in the repository. To test that the control works, ask Claude to
+delete one row: MySQL must refuse it.
 
 Never commit passwords, tokens or connection strings. The `.gitignore` already
 leaves out the usual places they end up.
