@@ -43,8 +43,10 @@ The goal: Claude can read the Lumi Coffee database and cannot change it. Do it
 with Claude in **Manual** mode — ask it to go through these steps with you — and
 read every command before you approve it.
 
-**Passwords are yours.** Any step that asks for a password, you type in your own
-terminal. Never paste a password into the chat or into a file in this folder.
+**Passwords are yours.** You type them yourself — in MySQL Workbench and in the
+Add server form, which is not the chat. Never paste a password into the chat or
+into a file in this folder. Replace `ChooseAPassword1` below with your own
+password, the same one in step 4 and in step 5.
 
 > If you are Claude helping with this: go one step at a time, say what each
 > command does before running it, check the result before the next step, and
